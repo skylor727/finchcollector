@@ -1,26 +1,33 @@
+from dataclasses import fields
 from django.shortcuts import render
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .models import Finch
 
 # Create your views here.
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse('<h1>Hello FinchCollector</h1>')
+    return render(request, 'home.html')
 
 def about(request):
     return render(request, 'about.html')
 
 def finches_index(request):
+    finches = Finch.objects.all()
     return render(request, 'finches/index.html', {'finches': finches})
 
-class Finch:
-    def __init__(self, name, species, description, age):
-        self.name = name
-        self.species = species
-        self.description = description
-        self.age = age
+def finches_detail(request, finch_id):
+    finch = Finch.objects.get(id=finch_id)
+    return render(request, 'finches/detail.html', { 'finch': finch })
 
-finches = [
-    Finch('Script', 'Java', 'First pet bird to conquer Asia', 2),
-    Finch('Rainbow', 'Gouldian', 'Endangered in its native habitat of Northern Australia', 3),
-    Finch('Owl', 'Double-barred', 'A popular species that goes by several other names, the Owl finch, Clown Finch and Bicheno’s finch', 4)
-]
+class FinchCreate(CreateView):
+    model = Finch
+    fields = '__all__'
+
+class FinchUpdate(UpdateView):
+    model = Finch
+    fields = '__all__'
+
+class FinchDelete(DeleteView):
+    model = Finch
+    success_url = '/finches/'
